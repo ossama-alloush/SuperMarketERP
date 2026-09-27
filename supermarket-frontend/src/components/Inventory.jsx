@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
 
-export default function Inventory({ products, categories, newProduct, setNewProduct, handleAddProduct, apiBase = "http://localhost:5000/api", onRefresh = () => {} }) {
+const DEFAULT_API = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "http://localhost:5000/api";
+
+export default function Inventory({ 
+  products, 
+  categories, 
+  newProduct, 
+  setNewProduct, 
+  handleAddProduct, 
+  apiBase = DEFAULT_API, 
+  onRefresh = () => {} 
+}) {
   const [editingId, setEditingId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
@@ -15,31 +25,28 @@ export default function Inventory({ products, categories, newProduct, setNewProd
     setEditingId(null);
   };
 
-  // --- تحديث دالة الحفظ هنا ---
- 
+  const handleSaveEdit = async (id) => {
+    try {
+      const payload = {
+        name: editFormData.name,
+        barcode: editFormData.barcode || '',
+        category_id: parseInt(editFormData.category_id),
+        buy_price: parseFloat(editFormData.buy_price) || 0,
+        sell_price: parseFloat(editFormData.sell_price) || 0,
+        stock_quantity: parseInt(editFormData.stock_quantity) || 0
+      };
 
-   const handleSaveEdit = async (id) => {
-  try {
-    const payload = {
-      name: editFormData.name,
-      barcode: editFormData.barcode || '',
-      category_id: parseInt(editFormData.category_id),
-      buy_price: parseFloat(editFormData.buy_price) || 0,
-      sell_price: parseFloat(editFormData.sell_price) || 0,
-      stock_quantity: parseInt(editFormData.stock_quantity) || 0
-    };
+      const targetUrl = `${apiBase}/products/${id}`;
+      console.log('Sending PUT request to:', targetUrl);
 
-    const targetUrl = `${apiBase}/products/${id}`;
-    console.log('Sending PUT request to:', targetUrl); // <-- أضف هذا السطر
-
-    await axios.put(targetUrl, payload);
-    setEditingId(null);
-    onRefresh();
-  } catch (err) {
-    console.error('Update Error Details:', err.response || err);
-    alert('Failed to update product: ' + (err.response?.data?.error || err.message));
-  }
-};
+      await axios.put(targetUrl, payload);
+      setEditingId(null);
+      onRefresh();
+    } catch (err) {
+      console.error('Update Error Details:', err.response || err);
+      alert('Failed to update product: ' + (err.response?.data?.error || err.message));
+    }
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;

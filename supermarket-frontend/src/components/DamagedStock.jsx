@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AlertTriangle, Trash2, CheckCircle } from 'lucide-react';
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-export default function DamagedStock({ products, apiBase = "http://localhost:5000/api", onRefresh }) {
+export default function DamagedStock({ products, apiBase = `${DEFAULT_API_URL}/api`, onRefresh }) {
   const [damagedList, setDamagedList] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [quantity, setQuantity] = useState(1);

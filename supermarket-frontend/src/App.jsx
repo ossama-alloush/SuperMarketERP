@@ -9,7 +9,9 @@ import ReceiptModal from './components/ReceiptModal';
 import Suppliers from './components/Suppliers';
 import DamagedStock from './components/DamagedStock';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : 'http://localhost:5000/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('pos');
@@ -184,7 +186,7 @@ export default function App() {
           <DamagedStock 
             products={products} 
             apiBase={API_BASE} 
-            onRefresh={fetchData} // تم تعديلها هنا إلى fetchData
+            onRefresh={fetchData}
           />
         )}
 
